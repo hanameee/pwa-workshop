@@ -56,6 +56,7 @@ const App = () => {
             <h1>
                 정-하<span role="img">😀</span>
             </h1>
+            <p>메모장에 추가할 내용을 입력해주세요</p>
             <Write addData={addData} />
             <h2>List:</h2>
             <List data={data} />
