@@ -2,6 +2,7 @@ name: Publish Static Web App to Azure Blob Storage
 
 on: push
 
+# 첫번째 Job
 jobs:
     build_and_publish:
         runs-on: ubuntu-latest
@@ -29,6 +30,34 @@ jobs:
               shell: bash
               run: |
                   npm run test
+
+            - name: Upload app
+              uses: actions/upload-artifact@v1
+              with:
+                  name: app
+                  path: build
+            # - name: Publish app
+            #   uses: Azure/cli@v1.0.0
+            #   with:
+            #       azcliversion: latest
+            #       inlineScript: |
+            #           az storage blob upload-batch -s build -d \$web --account-name ${{ secrets.STORAGE_ACCOUNT_NAME }}
+
+    deploy_to_dev:
+        needs: build_and_publish # build_and_publish job이 실행된 다음에 실행되어야 하므로 NEEDS 를 통해 dependency 를 추가해줄 수 있다.
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Download app # 이친구가 추가된 것임
+              uses: actions/download-artifact@v1
+              with:
+                  name: app
+                  path: build
+
+            - name: Login to Azure
+              uses: Azure/login@v1
+              with:
+                  creds: ${{ secrets.AZURE_CREDENTIALS }}
 
             - name: Publish app
               uses: Azure/cli@v1.0.0
